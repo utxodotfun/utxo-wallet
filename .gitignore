@@ -1,0 +1,19 @@
+# Sensitive wallet files (never commit these)
+.wallet.json
+.wallet.key
+.session.json
+
+# Backup files
+*.backup.*
+
+# Temp body files used by api-call
+body.json
+*-body.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
