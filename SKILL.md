@@ -1,6 +1,6 @@
 ---
 name: utxo_wallet
-version: 1.2.0
+version: 1.3.0
 description: Full UTXO Exchange agent skill — wallet connect, deposit, explore trending tokens, token launch, swap (buy/sell). Everything an AI agent needs.
 license: MIT
 repository: https://github.com/DavidYashar/utxo-wallet
@@ -80,7 +80,7 @@ Flags:
 | Method | Endpoint | Auth | Purpose |
 |--------|----------|------|---------|
 | GET | `/api/agent/wallet/balance` | Bearer | Check sats balance + token holdings |
-| GET | `/api/agent/trending` | No | Discover trending tokens (new pairs, migrating, migrated) with optional sort |
+| GET | `/api/agent/trending` | No | Discover trending tokens (new pairs, migrating, migrated, gainers, losers) with optional sort |
 | GET | `/api/agent/token/info?address=X` | No | Get detailed info on a specific token |
 | POST | `/api/agent/token/launch` | Bearer | Create a new token (single-step) |
 | POST | `/api/agent/swap` | Bearer | Buy or sell tokens (single-step) |
@@ -157,36 +157,44 @@ Response:
 
 ### Trending Tokens
 
-See what is hot on UTXO Exchange. Returns tokens in three categories:
+See what is hot on UTXO Exchange. Returns tokens in five categories:
 
 - **new_pairs** (New Pairs) — Recently launched tokens, still on the bonding curve
 - **migrating** (Migrating) — Tokens past 55% bonding progress, approaching migration to full AMM
 - **migrated** (Migrated) — Tokens that completed the bonding curve and trade on the full AMM
+- **gainers** — Tokens with the biggest price increase (real snapshot data, configurable timeframe)
+- **losers** — Tokens with the biggest price drop (real snapshot data, configurable timeframe)
 
 ```
 exec node skills/utxo_wallet/scripts/api-call.cjs GET "/api/agent/trending?category=all&limit=10"
 ```
 
 Parameters (query string):
-- `category`: `new_pairs` | `migrating` | `migrated` | `all` (default: `all`)
-- `limit`: 1 to 25 (default: 10)
+- `category`: `new_pairs` | `migrating` | `migrated` | `gainers` | `losers` | `all` (default: `all`)
+- `limit`: 1 to 50 (default: 10)
+- `offset`: 0+ (default: 0, for pagination)
 - `sort`: `default` | `volume` | `tvl` | `gainers` | `losers` (default: `default`)
+- `timeframe`: `1h` | `6h` | `12h` | `24h` (default: `24h`, used for gainers/losers categories)
 
 Default sort per category (when `sort=default`):
 - `new_pairs` — newest first (by creation time)
 - `migrating` — closest to migrating first (by bonding progress)
 - `migrated` — highest liquidity first (by TVL)
+- `gainers` — biggest price increase first (real price snapshot data)
+- `losers` — biggest price drop first (real price snapshot data)
 
 Sort options:
 - `volume` — highest 24h trading volume first
 - `tvl` — highest total value locked first
-- `gainers` — biggest 24h price increase first
-- `losers` — biggest 24h price drop first
+- `gainers` — biggest price increase first
+- `losers` — biggest price drop first
 
 Examples:
 ```
 exec node skills/utxo_wallet/scripts/api-call.cjs GET "/api/agent/trending?category=migrated&sort=volume&limit=5"
-exec node skills/utxo_wallet/scripts/api-call.cjs GET "/api/agent/trending?category=new_pairs&sort=gainers&limit=10"
+exec node skills/utxo_wallet/scripts/api-call.cjs GET "/api/agent/trending?category=gainers&timeframe=1h&limit=10"
+exec node skills/utxo_wallet/scripts/api-call.cjs GET "/api/agent/trending?category=losers&timeframe=6h&limit=10"
+exec node skills/utxo_wallet/scripts/api-call.cjs GET "/api/agent/trending?category=all&limit=5&offset=10"
 ```
 
 Response fields per token:
@@ -229,9 +237,48 @@ After funding, verify with `GET /api/agent/wallet/balance`.
 
 Creates a new token with a bonding curve pool. The server handles all the heavy lifting (token creation, minting, pool creation) using the agent's session wallet directly.
 
+### Required Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `name` | string | Token name (1-50 chars) |
+| `ticker` | string | Token symbol (1-6 alphanumeric chars, auto-uppercased) |
+| `supply` | number | Total supply in display units |
+
+### Optional Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `decimals` | number | Token decimals, 0-9 (default: 6) |
+| `bio` | string | Token description (max 100 chars) |
+| `x` | string | X/Twitter username, NO @ prefix (max 15 chars) |
+| `website` | string | Website URL (max 200 chars) |
+| `telegram` | string | Telegram URL (max 200 chars) |
+| `imageUrl` | string | Token logo URL (https). Server fetches, resizes to 512x512, uploads to storage. Supports PNG, JPG, WebP, GIF. |
+| `initialBuyAmountSats` | number | Auto-buy sats after launch (1000-5000000 sats) |
+
+### Basic Launch (minimal)
+
 Write a JSON file (e.g. `launch-body.json`):
 ```json
 {"name":"MyToken","ticker":"MTK","supply":1000000,"decimals":6}
+```
+
+### Full Launch (with logo, links, and initial buy)
+
+```json
+{
+  "name": "MyToken",
+  "ticker": "MTK",
+  "supply": 1000000,
+  "decimals": 6,
+  "bio": "A cool community token on Spark Network",
+  "x": "mytokenhandle",
+  "website": "https://mytoken.com",
+  "telegram": "https://t.me/mytokengroup",
+  "imageUrl": "https://example.com/logo.png",
+  "initialBuyAmountSats": 5000
+}
 ```
 
 ```
