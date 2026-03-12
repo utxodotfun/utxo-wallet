@@ -8,13 +8,7 @@ Enables any AI agent to: connect a wallet, check balances, discover tokens, laun
 
 ## Install
 
-### Via ClawHub (recommended)
-
-```bash
-npx clawhub install utxo-wallet
-```
-
-### Via GitHub (manual)
+### Via Git (recommended)
 
 Clone into your agent's skills directory:
 
@@ -23,7 +17,32 @@ cd your-agent-workspace/skills
 git clone https://github.com/DavidYashar/utxo-wallet.git utxo_wallet
 ```
 
-Then set environment variables:
+### Via curl / wget (no git required)
+
+Download the three files directly:
+
+```bash
+mkdir -p skills/utxo_wallet/scripts
+
+curl -sL -o skills/utxo_wallet/SKILL.md \
+  https://raw.githubusercontent.com/DavidYashar/utxo-wallet/main/SKILL.md
+
+curl -sL -o skills/utxo_wallet/scripts/wallet-connect.cjs \
+  https://raw.githubusercontent.com/DavidYashar/utxo-wallet/main/scripts/wallet-connect.cjs
+
+curl -sL -o skills/utxo_wallet/scripts/api-call.cjs \
+  https://raw.githubusercontent.com/DavidYashar/utxo-wallet/main/scripts/api-call.cjs
+```
+
+### Via ClawHub
+
+```bash
+npx clawhub install utxo-wallet
+```
+
+### After installing
+
+Set environment variables:
 
 ```bash
 export UTXO_API_BASE_URL=https://utxo.fun   # or http://localhost:3000 for local dev

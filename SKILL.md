@@ -32,15 +32,23 @@ Covers: wallet provisioning, balance checks, token discovery (trending + info), 
 
 ## Install This Skill
 
-**Via ClawHub:**
-```
-npx clawhub install utxo-wallet
-```
-
-**Via GitHub (into your agent's skills directory):**
+**Via Git:**
 ```
 cd agent-workspace/skills
 git clone https://github.com/DavidYashar/utxo-wallet.git utxo_wallet
+```
+
+**Via curl (no git required):**
+```
+mkdir -p skills/utxo_wallet/scripts
+curl -sL -o skills/utxo_wallet/SKILL.md https://raw.githubusercontent.com/DavidYashar/utxo-wallet/main/SKILL.md
+curl -sL -o skills/utxo_wallet/scripts/wallet-connect.cjs https://raw.githubusercontent.com/DavidYashar/utxo-wallet/main/scripts/wallet-connect.cjs
+curl -sL -o skills/utxo_wallet/scripts/api-call.cjs https://raw.githubusercontent.com/DavidYashar/utxo-wallet/main/scripts/api-call.cjs
+```
+
+**Via ClawHub:**
+```
+npx clawhub install utxo-wallet
 ```
 
 After installing, set these environment variables:
