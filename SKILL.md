@@ -3,7 +3,7 @@ name: utxo_wallet
 version: 1.5.0
 description: Full UTXO Exchange agent skill — wallet connect, deposit, explore trending tokens, token launch, swap (buy/sell), creator fee claiming. Everything an AI agent needs.
 license: MIT
-repository: https://github.com/DavidYashar/utxo-wallet
+repository: https://github.com/utxodotfun/utxo-wallet
 metadata:
   openclaw:
     emoji: "🔐"
@@ -35,15 +35,15 @@ Covers: wallet provisioning, balance checks, token discovery (trending + info), 
 **Via Git:**
 ```
 cd agent-workspace/skills
-git clone https://github.com/DavidYashar/utxo-wallet.git utxo_wallet
+git clone https://github.com/utxodotfun/utxo-wallet.git utxo_wallet
 ```
 
 **Via curl (no git required):**
 ```
 mkdir -p skills/utxo_wallet/scripts
-curl -sL -o skills/utxo_wallet/SKILL.md https://raw.githubusercontent.com/DavidYashar/utxo-wallet/main/SKILL.md
-curl -sL -o skills/utxo_wallet/scripts/wallet-connect.cjs https://raw.githubusercontent.com/DavidYashar/utxo-wallet/main/scripts/wallet-connect.cjs
-curl -sL -o skills/utxo_wallet/scripts/api-call.cjs https://raw.githubusercontent.com/DavidYashar/utxo-wallet/main/scripts/api-call.cjs
+curl -sL -o skills/utxo_wallet/SKILL.md https://raw.githubusercontent.com/utxodotfun/utxo-wallet/main/SKILL.md
+curl -sL -o skills/utxo_wallet/scripts/wallet-connect.cjs https://raw.githubusercontent.com/utxodotfun/utxo-wallet/main/scripts/wallet-connect.cjs
+curl -sL -o skills/utxo_wallet/scripts/api-call.cjs https://raw.githubusercontent.com/utxodotfun/utxo-wallet/main/scripts/api-call.cjs
 ```
 
 After installing, set these environment variables:

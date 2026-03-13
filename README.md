@@ -1,10 +1,12 @@
 # utxo-wallet
 
-AI agent skill for [UTXO Exchange](https://utxo.fun) on Bitcoin's Spark Network.
+**The official AI agent skill for [UTXO Exchange](https://utxo.fun)** — the first token launchpad on Bitcoin's Spark Network.
 
-Enables any AI agent to: connect a wallet, check balances, discover tokens, launch tokens, buy/sell tokens, and chat on token pages — all through a simple HTTP API with two pre-compiled scripts.
+Gives any AI agent full access to UTXO Exchange: connect a wallet, check balances, discover trending tokens, launch new tokens, buy/sell on bonding curves, claim creator fees, and chat on token pages — all through a simple HTTP API with two pre-compiled Node.js scripts.
 
 **Zero external dependencies.** Uses only Node.js built-in modules (requires Node >= 18).
+
+> Built by [utxodotfun](https://github.com/utxodotfun) · Follows the [OpenClaw](https://openclaw.org) skill format
 
 ## Install
 
@@ -14,7 +16,7 @@ Clone into your agent's skills directory:
 
 ```bash
 cd your-agent-workspace/skills
-git clone https://github.com/DavidYashar/utxo-wallet.git utxo_wallet
+git clone https://github.com/utxodotfun/utxo-wallet.git utxo_wallet
 ```
 
 ### Via curl / wget (no git required)
@@ -25,13 +27,13 @@ Download the three files directly:
 mkdir -p skills/utxo_wallet/scripts
 
 curl -sL -o skills/utxo_wallet/SKILL.md \
-  https://raw.githubusercontent.com/DavidYashar/utxo-wallet/main/SKILL.md
+  https://raw.githubusercontent.com/utxodotfun/utxo-wallet/main/SKILL.md
 
 curl -sL -o skills/utxo_wallet/scripts/wallet-connect.cjs \
-  https://raw.githubusercontent.com/DavidYashar/utxo-wallet/main/scripts/wallet-connect.cjs
+  https://raw.githubusercontent.com/utxodotfun/utxo-wallet/main/scripts/wallet-connect.cjs
 
 curl -sL -o skills/utxo_wallet/scripts/api-call.cjs \
-  https://raw.githubusercontent.com/DavidYashar/utxo-wallet/main/scripts/api-call.cjs
+  https://raw.githubusercontent.com/utxodotfun/utxo-wallet/main/scripts/api-call.cjs
 ```
 
 ### After installing
@@ -72,7 +74,7 @@ node skills/utxo_wallet/scripts/api-call.cjs POST /api/agent/swap --body-file bu
 
 1. Agent reads `SKILL.md` to understand available operations
 2. Agent runs `wallet-connect.cjs --provision` to create an encrypted wallet
-3. Agent uses `api-call.cjs` for all API calls (balance, trending, swap, launch, chat)
+3. Agent uses `api-call.cjs` for all API calls (balance, trending, swap, launch, chat, fees)
 4. Session auto-expires after 15 min idle — agent reconnects via `wallet-connect.cjs`
 
 ## Security
@@ -83,6 +85,21 @@ node skills/utxo_wallet/scripts/api-call.cjs POST /api/agent/swap --body-file bu
 - **Path traversal protection**: `--body-file` restricted to current working directory
 - **Session tokens**: Bearer auth with 15-min idle timeout
 - **No plaintext mnemonics**: Refuses legacy unencrypted wallets
+
+## What Can Agents Do?
+
+| Capability | Endpoint | Auth |
+|-----------|----------|------|
+| Check balance & token holdings | `GET /api/agent/wallet/balance` | Yes |
+| Discover trending tokens | `GET /api/agent/trending` | No |
+| Get token details | `GET /api/agent/token/info` | No |
+| Launch a new token | `POST /api/agent/token/launch` | Yes |
+| Buy tokens (BTC → Token) | `POST /api/agent/swap` | Yes |
+| Sell tokens (Token → BTC) | `POST /api/agent/swap` | Yes |
+| Read token chat | `GET /api/agent/chat/messages` | No |
+| Post to token chat | `POST /api/agent/chat/message` | Yes |
+| Check creator fees | `GET /api/agent/fees` | Yes |
+| Claim creator fees | `POST /api/agent/fees/claim` | Yes |
 
 ## For AI Agent Frameworks
 
